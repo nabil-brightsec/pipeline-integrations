@@ -48,7 +48,7 @@ jobs:
           api_token: ${{ secrets.BRIGHTSEC_TOKEN }}
           discovery_id: ${{ steps.extract_id.outputs.discovery_id }}
           project_id: ${{ vars.PROJECT_ID }}
-          timeout: 900
+          timeout: 3600
           hostname: ${{ vars.HOSTNAME }}
   
       - name: List Project Entrypoints
