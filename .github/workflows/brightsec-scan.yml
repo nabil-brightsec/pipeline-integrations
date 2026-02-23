@@ -15,18 +15,17 @@ jobs:
         id: run_discovery
         uses: NeuraLegion/run-discovery@v1.1
         with:
-          api_token: ${{ secrets.BRIGHTSEC_TOKEN }}
-          project_id: ${{ vars.PROJECT_ID }}
-          hostname: ${{ vars.HOSTNAME }}
-          auth_object_id: ${{ vars.AUTH_ID }}
-          discovery_types: '[ "crawler" ]'
-          crawler_urls: '[ "https://brokencrystals.com" ]'
+          api_token: ${{ secrets.BRIGHTSEC_TOKEN }} 
+          project_id: ${{ vars.PROJECT_ID }} 
+          hostname: ${{ vars.HOSTNAME }} 
+          auth_object_id: ${{ vars.AUTH_ID }} 
+          discovery_types: '[ "crawler" ]' 
+          crawler_urls: '[ "https://brokencrystals.com" ]' 
           name: GitHub discovery ${{ github.sha }}
           concurrency: 10 
           interactions_depth: 3 
           smart: true 
-          exclude_entry_points: '[ "(?<excluded_file_ext>(\\/\\/[^?#]+\\.)((?<image>jpg|jpeg|png|gif|svg|eps|webp|tif|tiff|bmp|psd|ai|raw|cr|pcx|tga|ico)|(?<video>mp4|avi|3gp|flv|h264|m4v|mkv|mov|mpg|mpeg|vob|wmv)|(?<audio>wav|mp3|ogg|wma|mid|midi|aif)|(?<document>doc|docx|odt|pdf|rtf|ods|xls|xlsx|odp|ppt|pptx)|(?<font>ttf|otf|fnt|fon))(?:$|#|\\?))", "logout|signout", "(\\/(client_204|csi_204|gen_204|generate_204)\\?)|(&l=dataLayer&cx=c)|(\\.js\\?id=GTM-)|(\\/ns.html\\?id=GTM-)|(:\\/\\/gtm.*\\.js\\?st=)|(:\\/\\/load.*\\.js\\?st=)|.*adservice\\.google\\.|.*googletagmanager.com|.*google-analytics.com|beacon.min.js|(\\/cdn-cgi\\/apps\\/body\\/)|(.*trustarc.com\\/(cap|log)?)|.*trkn.us|(\\/facebook[-_\\/]?(pixel|fbevents|productad).*.js)|(\\/\\?sentry_(key|version)=)|(\\/sentry[-\\/](bundle|browser|logger|tracing).*.js)|(\\/log\\?(action|count|data|documentUrl|event|entry|id|kc|method|ref|sLog|tag|uuid)=)|mathtag.com|scorecardresearch.com|criteo\\.(com|net)" ]'
-          # restart_discovery_id: # optional
+         # restart_discovery_id: # optional
           # file_id: # optional
           # repeaters: # optional
           # smart: # optional
