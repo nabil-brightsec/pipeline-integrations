@@ -22,15 +22,17 @@ jobs:
           discovery_types: '[ "crawler" ]'
           crawler_urls: '[ "https://brokencrystals.com" ]'
           name: GitHub discovery ${{ github.sha }}
+          concurrency: 10 
+          interactions_depth: 3 
+          smart: true 
+          exclude_entry_points: '[ "(?<excluded_file_ext>(\\/\\/[^?#]+\\.)((?<image>jpg|jpeg|png|gif|svg|eps|webp|tif|tiff|bmp|psd|ai|raw|cr|pcx|tga|ico)|(?<video>mp4|avi|3gp|flv|h264|m4v|mkv|mov|mpg|mpeg|vob|wmv)|(?<audio>wav|mp3|ogg|wma|mid|midi|aif)|(?<document>doc|docx|odt|pdf|rtf|ods|xls|xlsx|odp|ppt|pptx)|(?<font>ttf|otf|fnt|fon))(?:$|#|\\?))", "logout|signout", "(\\/(client_204|csi_204|gen_204|generate_204)\\?)|(&l=dataLayer&cx=c)|(\\.js\\?id=GTM-)|(\\/ns.html\\?id=GTM-)|(:\\/\\/gtm.*\\.js\\?st=)|(:\\/\\/load.*\\.js\\?st=)|.*adservice\\.google\\.|.*googletagmanager.com|.*google-analytics.com|beacon.min.js|(\\/cdn-cgi\\/apps\\/body\\/)|(.*trustarc.com\\/(cap|log)?)|.*trkn.us|(\\/facebook[-_\\/]?(pixel|fbevents|productad).*.js)|(\\/\\?sentry_(key|version)=)|(\\/sentry[-\\/](bundle|browser|logger|tracing).*.js)|(\\/log\\?(action|count|data|documentUrl|event|entry|id|kc|method|ref|sLog|tag|uuid)=)|mathtag.com|scorecardresearch.com|criteo\\.(com|net)" ]'
           # restart_discovery_id: # optional
           # file_id: # optional
           # repeaters: # optional
           # smart: # optional
-          # exclude_entry_points: # optional
           # hosts_filter: # optional
           # crawl_parent_subdomains: # optional
-          # concurrency: # optional
-          # interactions_depth: # optional
+          
           
       - name: Get the output discovery url
         id: extract_id
@@ -40,15 +42,15 @@ jobs:
             echo "Discovery ID is: $id"
             echo "discovery_id=$id" >> $GITHUB_OUTPUT
 
-      # - name: Wait for Bright discovery
-        # id: wait_discovery
-        # uses: NeuraLegion/wait-for-discovery@v1
-        # with:
-          # api_token: ${{ secrets.BRIGHTSEC_TOKEN }}
-          # discovery_id: ${{ steps.extract_id.outputs.discovery_id }}
-          # project_id: ${{ vars.PROJECT_ID }}
-          # timeout:
-          # hostname: ${{ vars.HOSTNAME }}
+      - name: Wait for Bright discovery
+        id: wait_discovery
+        uses: NeuraLegion/wait-for-discovery@v1
+        with:
+          api_token: ${{ secrets.BRIGHTSEC_TOKEN }}
+          discovery_id: ${{ steps.extract_id.outputs.discovery_id }}
+          project_id: ${{ vars.PROJECT_ID }}
+          timeout: 900
+          hostname: ${{ vars.HOSTNAME }}
   
       - name: List Project Entrypoints
         id: entrypoints
@@ -60,39 +62,29 @@ jobs:
           limit: 50
           connectivity: ok,unreachable
           status: new,vulnerable
-    
-     # - name: Use Entrypoints
-       # run: |
-         # echo "Project ID: ${{ steps.entrypoints.outputs.projectId }}"
-         # echo "Entrypoints: ${{ steps.entrypoints.outputs.entrypoints }}"
+
+      - name: Save Entrypoints
+        id: parse_entrypoints
+        run: |
+          echo "entrypoints=${{ steps.entrypoints.outputs.entrypoints }}" >> $GITHUB_OUTPUT
          
       - name: Run a Bright Security Scan
         id: run_scan
         uses: NeuraLegion/run-scan@v1.3
         with:
-          name: GitHub scan ${{ github.sha }}
           api_token: ${{ secrets.BRIGHTSEC_TOKEN }}
-          hostname: ${{ vars.HOSTNAME }}
           project_id: ${{ vars.PROJECT_ID }}
-          entrypoints: |
-            [ "4Kzm71PH7VdmxA444dumyT", "mrrLMzNhybswh7YJif9AUq", "8J5QMjWvccw1L9Xa2MCpmg"]
+          hostname: ${{ vars.HOSTNAME }}
+          name: Scan ${{ github.sha }}
+          entrypoints: ${{ steps.parse_entrypoints.outputs.entrypoints }}
           module: "dast"
-          # auth_object_id: ${{ vars.AUTH_ID }}
-          # discovery_types: |
-            # [ "crawler" ]
-          # crawler_urls: |
-            # [ "https://brokencrystals.com" ]
-          # exclude_params: |
-            # [ "?<excluded_file_ext>(\/\/[^?#]+\.)((?<image>jpg|jpeg|png|gif|svg|eps|webp|tif|tiff|bmp|psd|ai|raw|cr|pcx|tga|ico)|(?<video>mp4|avi|3gp|flv|h264|m4v|mkv|mov|mpg|mpeg|vob|wmv)|(?<audio>wav|mp3|ogg|wma|mid|midi|aif)|(?<document>doc|docx|odt|pdf|rtf|ods|xls|xlsx|odp|ppt|pptx)|(?<font>ttf|otf|fnt|fon))(?:$|#|\?))", "logout|signout" ]
+          tests: '["amazon_s3_takeover","jwt","broken_saml_auth","brute_force_login","common_files","cookie_security","csrf","xss","css_injection","default_login_location","directory_listing","email_injection","file_upload","full_path_disclosure","graphql_introspection","header_security","html_injection","http_method_fuzzing","iframe_injection","improper_asset_management","insecure_tls_configuration","ldapi","lfi","nosql","open_cloud_storage","open_database","osi","proto_pollution","rfi","secret_tokens","ssti","server_side_js_injection","ssrf","sqli","stored_xss","unvalidated_redirect","version_control_systems","wordpress","xxe","xpathi","bopla","business_constraint_bypass","date_manipulation","excessive_data_exposure","id_enumeration","cve_test","retire_js"]'
           # restart_scan: # optional
-          # tests: |
-            # [ "sqli", "xss", "rce" ]
           # file_id: # optional
-          # repeaters: # optional
+          # repeaters: # optional (if used needs to be added in AO flow as well as Disocvery)
           # exclude_entry_points: # optional
           # module: # optional (dast, fuzzer)
           # hosts_filter: # optional
-          
           
       # - name: Stop Bright Security Scan
       #   uses: NeuraLegion/stop-scan@v1 
