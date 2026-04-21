@@ -49,16 +49,16 @@ jobs:
             echo "Discovery ID is: $id"
             echo "discovery_id=$id" >> $GITHUB_OUTPUT
   
-      - name: List Project Entrypoints
-        id: entrypoints
-        uses: NeuraLegion/list-entrypoints@v1
-        with:
-          api_token: ${{ secrets.BRIGHTSEC_TOKEN  }}
-          project_id: ${{ vars.PROJECT_ID }}
-          hostname: https://dvwa-lit-duck-8.k3s.brokencrystals.nexploit.app/
-          limit: 10
-          connectivity: ok,unreachable
-          status: new,vulnerable
+   #   - name: List Project Entrypoints
+    #    id: entrypoints
+    #    uses: NeuraLegion/list-entrypoints@v1
+    #    with:
+      #    api_token: ${{ secrets.BRIGHTSEC_TOKEN  }}
+     #     project_id: ${{ vars.PROJECT_ID }}
+      #    hostname: https://dvwa-lit-duck-8.k3s.brokencrystals.nexploit.app/
+      #    limit: 10
+      #    connectivity: ok,unreachable
+      #    status: new,vulnerable
          
       - name: Run a Bright Security Scan
         id: run_scan
