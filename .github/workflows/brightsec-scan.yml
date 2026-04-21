@@ -22,16 +22,24 @@ jobs:
           discovery_types: '[ "crawler"]' 
           crawler_urls: '[ "https://crapi-pure-duck-8.k3s.brokencrystals.nexploit.app/login"]' 
           name: GitHub discovery ${{ github.sha }}
+          crawl_parent_subdomains: true
           concurrency: 5 
           interactions_depth: 3 
           smart: true 
+        
          # restart_discovery_id: # optional
           # file_id: # optional
           # repeaters: # optional
           # smart: # optional
           # hosts_filter: # optional
-          # crawl_parent_subdomains: # optional
           
+      - name: Wait for discovery to finish ⏳
+        uses: NeuraLegion/wait-for-discovery@v1
+        with:
+            api_token: ${{ secrets.BRIGHTSEC_TOKEN }}
+            discovery_id: ${{ steps.run_discovery.outputs.id }}
+            project_id: ${{ vars.PROJECT_ID }}
+            timeout: 600   
           
       - name: Get the output discovery url
         id: extract_id
