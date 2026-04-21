@@ -28,7 +28,7 @@ jobs:
           crawler_urls: '[ "https://dvwa-lit-duck-8.k3s.brokencrystals.nexploit.app/" ]'
 
           # Optional: include auth if your app needs login
-          # auth_object_id: ${{ vars.AUTH_ID }}
+          auth_object_id: ${{ vars.AUTH_ID }}
 
           # Scan type
           module: "dast"
