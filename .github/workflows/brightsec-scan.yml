@@ -55,7 +55,7 @@ jobs:
         with:
           api_token: ${{ secrets.BRIGHTSEC_TOKEN  }}
           project_id: ${{ vars.PROJECT_ID }}
-          hostname: https://app.brightsec.com/ 
+          hostname: https://crapi-pure-duck-8.k3s.brokencrystals.nexploit.app
           limit: 10
           connectivity: ok,unreachable
           status: new,vulnerable
